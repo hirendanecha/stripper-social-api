@@ -699,25 +699,17 @@ socket.config = (server) => {
             if (params.groupId) {
               console.log("in=========>");
               io.to(`${params.groupId}`).emit("new-message", data.newMessage);
-              if (data?.notification) {
-                if (data?.notification) {
-                  io.to(`${params.groupId}`).emit(
-                    "notification",
-                    data?.notification
-                  );
-                }
-              }
+              io.to(`${params.groupId}`).emit(
+                "notification",
+                data?.notification
+              );
             } else {
               console.log("start call=========>", data);
               io.to(`${params.roomId}`).emit("new-message", data.newMessage);
-              if (data?.notification) {
-                if (data?.notification) {
-                  io.to(`${params.roomId}`).emit(
-                    "notification",
-                    data?.notification
-                  );
-                }
-              }
+              io.to(`${params.roomId}`).emit(
+                "notification",
+                data?.notification
+              );
             }
             // for (const key in data?.notifications) {
             //   if (Object.hasOwnProperty.call(data?.notifications, key)) {
@@ -969,6 +961,25 @@ socket.config = (server) => {
       try {
         if (params) {
           const data = await chatService.changeUserStatus(params);
+          if (cb) {
+            return cb(data);
+          }
+        }
+      } catch (error) {
+        cb(error);
+      }
+    });
+
+    socket.on("check-room", async (params, cb) => {
+      logger.info("check-room", {
+        ...params,
+        address,
+        id: socket.id,
+        method: "check-room",
+      });
+      try {
+        if (params) {
+          const data = await chatService.getRoomByProfileId(params);
           if (cb) {
             return cb(data);
           }
